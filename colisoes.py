@@ -3,18 +3,20 @@ import math
 import pygame 
 import random
 from pygame.locals import *
+from pygame import mixer
 from sys import exit
 
 pygame.init()
-## V = (1+Cr)Vcm - V1*Cr
+pygame.mixer.init()
+sound = mixer.Sound('boop.wav')
 
 CR = 1
 N_BOLAS = 10
 branco = (255, 255, 255)
-preto =(0, 0, 0)
+preto = (0, 0, 0)
 fonte = pygame.font.SysFont('arial', 12)
-largura = 800
-altura = 600
+largura = 1920
+altura = 1080
 tela = pygame.display.set_mode((largura, altura))
 pygame.display.set_caption('Simulador de colisões')
 
@@ -38,7 +40,7 @@ def calculaProjecao(v, vetor_diretor):
 def mudaPosicao(dist, raio1, raio2):
     return 0.5*(dist - raio1 - raio2)
        
-#======================================================== Criar bolas e validá-las ===================================================================================#
+# ======================================================== Criar bolas e validá-las =================================================================================== #
 bolas = []
 for i in range(N_BOLAS):
     bolas.append(Bolas()) # Adiciona uma bola na lista de bolas
@@ -54,7 +56,7 @@ for i in range(N_BOLAS):
             if (math.hypot(bolas[i].pos[0] - bolas[k].pos[0], bolas[i].pos[1] - bolas[k].pos[1])
             <= (bolas[i].raio + bolas[k].raio)):
                 recriar = True
-#====================================================================================================================================================================#                     
+# ==================================================================================================================================================================== #                     
                     
 clock = pygame.time.Clock() 
   
@@ -78,7 +80,7 @@ while True:
         ky += np.divide(np.multiply(bolas[i].massa, np.multiply(bolas[i].velocidade[1], bolas[i].velocidade[1])), 2)
     kx = round(kx, 3)
     ky = round(ky, 3)
-    k = kx + ky
+    k = round(np.add(kx, ky), 3)
     
     textoX = fonte.render(f'Kx = {kx}', True, branco, preto)
     textoRectX = textoX.get_rect()
@@ -86,11 +88,11 @@ while True:
 
     textoY = fonte.render(f'Ky = {ky}', True, branco, preto)
     textoRectY = textoY.get_rect()
-    textoRectY.center = (largura // 2, altura // 2 + 20)
+    textoRectY.center = (largura // 2, altura // 2)
     
     textoK = fonte.render (f'K = {k}', True, branco, preto)
     textoRectK = textoK.get_rect()
-    textoRectK.center = (largura // 2, altura // 2)
+    textoRectK.center = (largura // 2, altura // 2 + 20)
 
     tela.blit(textoX, textoRectX)
     tela.blit(textoY, textoRectY)
@@ -125,7 +127,7 @@ while True:
     # Colisões entre as bolas #        
         for j in range(i+1, len(bolas)):
             dist = calculaDistancia(bolas[i].pos, bolas[j].pos)
-            if dist <= np.abs((bolas[i].raio + bolas[j].raio)):
+            if dist <= (bolas[i].raio + bolas[j].raio):
                 
                 # ===== Muda a posicao das bolas para que ======= #
                 # ===== elas não entrem umas nas outras ========= #
@@ -136,6 +138,7 @@ while True:
                 
                 bolas[j].pos[0] += fatorDeMudanca * (bolas[i].pos[0] - bolas[j].pos[0])/dist
                 bolas[j].pos[1] += fatorDeMudanca * (bolas[i].pos[1] - bolas[j].pos[1])/dist
+                mixer.Sound.play(sound)
                 
                 # ========= Colide as bolas ========= #
                 vetor_diretor = np.subtract(bolas[i].pos, bolas[j].pos)
@@ -153,7 +156,7 @@ while True:
                 vcm = np.divide((np.add(momento_1, momento_2)), (bolas[i].massa + bolas[j].massa))
                 vcm = calculaProjecao(vcm, vetor_diretor) #Calcula velocidade do centro de massa no sentido da colisão.
                 
-                proj_v1 = np.subtract(np.multiply(1+CR, vcm), np.multiply(CR, proj_v1)) #V = (1+Cr)Vcm - V1*Cr
+                proj_v1 = np.subtract(np.multiply(1+CR, vcm), np.multiply(CR, proj_v1)) # V = (1+Cr)Vcm - V1*Cr
                 proj_v2 = np.subtract(np.multiply(1+CR, vcm), np.multiply(CR, proj_v2))
                 
                 vetor_v1 = np.add(proj_v1, v1_perpendicular) #Soma os vetores.
@@ -163,7 +166,7 @@ while True:
                 bolas[j].velocidade = vetor_v2 
                 
                 bolas[i].cor = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-                bolas[j].cor = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))     
+                bolas[j].cor = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))    
                 # ==================================== #               
     pygame.display.update()
                   
