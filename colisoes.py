@@ -20,6 +20,8 @@ altura = 1080
 tela = pygame.display.set_mode((largura, altura))
 pygame.display.set_caption('Simulador de colisões')
 
+
+
 # Definição do objeto 'bola' #
 class Bolas:
     def __init__(self) -> None:
@@ -27,7 +29,7 @@ class Bolas:
         self.velocidade = [random.randint(-10, 10), random.randint(-10, 10)]
         self.raio = random.randint(10, 50)
         self.massa = self.raio*(1/2)
-        self.cor = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
+        self.cor = (random.randint(0, 255), 0 , random.randint(0, 255))
     def cria(self):
         pygame.draw.circle(tela, self.cor, (self.pos[0], self.pos[1]), self.raio)
 
@@ -138,6 +140,7 @@ while True:
                 
                 bolas[j].pos[0] += fatorDeMudanca * (bolas[i].pos[0] - bolas[j].pos[0])/dist
                 bolas[j].pos[1] += fatorDeMudanca * (bolas[i].pos[1] - bolas[j].pos[1])/dist
+                
                 mixer.Sound.play(sound)
                 
                 # ========= Colide as bolas ========= #
@@ -166,7 +169,7 @@ while True:
                 bolas[j].velocidade = vetor_v2 
                 
                 bolas[i].cor = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-                bolas[j].cor = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))    
+                bolas[j].cor = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)) 
                 # ==================================== #               
     pygame.display.update()
                   
